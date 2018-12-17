@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require 'pry'
+
+# Call this to update code while within pry.
+# Don't forget to add any new ruby files here when
+# they are created.
+def reload 
+  load 'core/decision_tree.rb'
+  load 'core/knn.rb'
+  load 'tools.rb'
+  load 'examples/gender.rb'
+  load 'examples/knn_test.rb'
+end
+
+Pry.start
+
+
+
