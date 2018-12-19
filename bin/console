@@ -8,11 +8,13 @@ require 'pry'
 def reload 
   load 'core/decision_tree.rb'
   load 'core/knn.rb'
+  load 'core/perceptron.rb'
   load 'tools.rb'
   load 'examples/gender.rb'
   load 'examples/knn_test.rb'
 end
 
+reload;
 Pry.start
 
 
