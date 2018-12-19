@@ -32,6 +32,12 @@ module GemML
         Math.sqrt(sum)
       end
 
+      def dot_product(vector1, vector2)
+        sum = 0
+        (0...vector1.count).each {|i| sum += vector1[i] * vector2[i] }
+        sum
+      end 
+
     end
   end
 end
