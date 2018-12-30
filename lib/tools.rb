@@ -96,6 +96,70 @@ module GemML
 
       end
 
+      # Scales the specified feature into range [-1, 1] (exclusive)
+      # by dividing each feature by 10^d where d is the least integer
+      # such that max(|scaled(val)|) < 1.
+      def decimal_normalize(data:, index:)
+          return data if data.empty?
+          max = data.max { |a,b| a[index].abs <=> b[index].abs }[index].abs
+          d = 0
+          while (max / (10 ** d)) >= 1
+            d += 1
+          end
+          normalizer = (10 ** d).to_f
+          length = data.first.count
+          data.map { |point| 
+            front = point[0...index]
+            back = point[(index + 1)...length] 
+
+            scaled_feature = point[index] / normalizer
+
+            front + [scaled_feature] + back
+          }
+      end
+
+      def z_score_normalize(data:, index:)
+        return data if data.empty?
+        mean = mean_value(data: data, index:index)
+        variance = determine_variance(data: data, index: index, mean: mean)
+        standard_deviation = determine_standard_deviation(data: data, index: index, variance: variance)
+        length = data.first.count
+        data.map { |point|
+          front = point[0...index]
+          back = point[(index + 1)...length] 
+
+          scaled_feature = (point[index] - mean) / standard_deviation
+
+          front + [scaled_feature] + back
+        }
+      end
+
+      # Calculates the mean for the feature at the specified index
+      def mean_value(data:, index:)
+        sum = 0
+        data.each { |point| 
+          sum += point[index]
+        }
+        sum / data.count.to_f
+      end
+
+      # Determines the variance for the feature at the speicified index
+      def determine_variance(data:, index:, mean:nil)
+        mean ||= mean_value(data:data, index:index)
+        sum = 0
+        data.each { |point| 
+          sum += (point[index] - mean) ** 2
+        }
+        sum / data.count.to_f
+      end
+
+      # Determines the standard deviation of the feature at the
+      # the specified index
+      def determine_standard_deviation(data:, index:, variance:nil)
+        variance ||= determine_variance(data:data, index: index)
+        Math.sqrt(variance)
+      end
+
       def normalize_data(data)
         # Normalize the data
         normalizers = get_normalizers(data)
